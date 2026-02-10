@@ -1,55 +1,66 @@
-const { Client, GatewayIntentBits } = require('discord.js');
-const { DisTube } = require('distube');
-const { SpotifyPlugin } = require('@distube/spotify');
+const { Client, GatewayIntentBits } = require("discord.js");
+const { DisTube } = require("distube");
+const { SpotifyPlugin } = require("@distube/spotify");
 
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildVoiceStates,
     GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent
-  ]
+    GatewayIntentBits.MessageContent,
+  ],
 });
 
 const distube = new DisTube(client, {
+  emitNewSongOnly: true,
   plugins: [new SpotifyPlugin()],
-  emitNewSongOnly: true
 });
 
-client.on('ready', () => {
-  console.log(`Logged in as ${client.user.tag}`);
+client.on("ready", () => {
+  console.log(`✅ Logged in as ${client.user.tag}`);
 });
 
-client.on('messageCreate', async message => {
-  if (!message.content.startsWith('!') || message.author.bot) return;
+client.on("messageCreate", async (message) => {
+  if (!message.content.startsWith("!") || message.author.bot) return;
 
   const args = message.content.slice(1).trim().split(/ +/);
   const command = args.shift().toLowerCase();
 
-  if (command === 'play') {
-    const voiceChannel = message.member.voice.channel;
-    if (!voiceChannel) return message.reply('Join voice channel first!');
-    distube.play(voiceChannel, args.join(" "), {
+  if (command === "play") {
+    if (!message.member.voice.channel)
+      return message.reply("❌ Join a voice channel first!");
+
+    distube.play(message.member.voice.channel, args.join(" "), {
       member: message.member,
       textChannel: message.channel,
     });
   }
 
-  if (command === 'stop') {
+  if (command === "stop") {
     distube.stop(message);
-    message.channel.send('Stopped music');
+    message.channel.send("⏹ Stopped music.");
   }
 
-  if (command === 'skip') {
+  if (command === "skip") {
     distube.skip(message);
   }
 
-  if (command === 'pause') {
+  if (command === "pause") {
     distube.pause(message);
   }
 
-  if (command === 'resume') {
+  if (command === "resume") {
     distube.resume(message);
+  }
+
+  if (command === "queue") {
+    const queue = distube.getQueue(message);
+    if (!queue) return message.channel.send("No songs in queue.");
+    message.channel.send(
+      queue.songs
+        .map((song, id) => `${id + 1}. ${song.name} - ${song.formattedDuration}`)
+        .join("\n")
+    );
   }
 });
 
