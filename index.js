@@ -51,14 +51,6 @@ client.on('messageCreate', async message => {
   if (command === 'resume') {
     distube.resume(message);
   }
-
-  if (command === 'queue') {
-    const queue = distube.getQueue(message);
-    if (!queue) return message.channel.send("No queue.");
-    message.channel.send(queue.songs.map((song, i) =>
-      `${i + 1}. ${song.name} - ${song.formattedDuration}`
-    ).join("\n"));
-  }
 });
 
 client.login(process.env.DISCORD_TOKEN);
