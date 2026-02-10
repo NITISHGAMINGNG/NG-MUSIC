@@ -1,8 +1,11 @@
 {
-  "name": "music-bot",
+  "name": "ng-music",
   "version": "1.0.0",
+  "description": "Discord Music Bot",
   "main": "index.js",
-  "type": "commonjs",
+  "scripts": {
+    "start": "node index.js"
+  },
   "engines": {
     "node": "18.x"
   },
@@ -10,4 +13,7 @@
     "discord.js": "^14.14.1",
     "distube": "^4.2.0",
     "@distube/spotify": "^2.0.2",
-    "@distube/ytdl-c
+    "@distube/ytdl-core": "^4.13.3",
+    "ffmpeg-static": "^5.2.0"
+  }
+}
